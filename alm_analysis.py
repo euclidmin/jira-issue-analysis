@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import platform
 from matplotlib import font_manager, rc
 import matplotlib.pyplot as plt
+import math
 
 
 
@@ -62,19 +63,19 @@ class JiraAnalysis :
             for issue in issues :
                 df = df.append(
                     {'Key':issue.key,
-                     'assignee':issue.fields.assignee,
+                     'assignee':str(issue.fields.assignee),
                      'status':issue.fields.status.name,
-                     'resolution':issue.fields.resolution,
+                     'resolution':str(issue.fields.resolution),
                      'summary':issue.fields.summary,
                      'created':datetime.strptime(issue.fields.created, '%Y-%m-%dT%H:%M:%S.%f%z'),
                      'updated':datetime.strptime(issue.fields.updated, '%Y-%m-%dT%H:%M:%S.%f%z'),
                      'due date':issue.fields.duedate,
                      'TC ID':issue.fields.customfield_12922,
-                     'grade':issue.fields.customfield_12905
+                     'grade':str(issue.fields.customfield_12905)
                      },
                     ignore_index=True
                 )
-            print(df)
+            # print(df)
             return df
 
         def _append_issue_array(df, issues) :
@@ -127,22 +128,37 @@ class JiraAnalysis :
         print(df['assignee'].value_counts())
         assignee_count = df['assignee'].value_counts()
         print(type(assignee_count))
-        assignee_count.plot(kind='bar')
+        assignee_count.plot.bar()
         plt.show()
 
     def draw_2D_x_y(self, df, x=None, y=None):
+        def _draw_sub_plot(pv):
+            print('_draw_sub_plot')
+            plot_num = pv.shape[1]      #shape tuple(x, y)
+            subplot_num = int(math.sqrt(plot_num) // 1)
+            for i in range(1, plot_num+1) :
+                plt.subplot(subplot_num+1, subplot_num, i)
+                # plt.plot(pv.axes[0], pv[pv.columns[i-1]])
+                plt.bar(pv.axes[0], pv[pv.columns[i-1]])
+                # plt.xlabel(pv.index)
+                # plt.ylable(pv.columns[i-1])
+            plt.show()
+
         # ex) x='assignee', y='status'
         if x not in self.ISSUE_FIELD :
             print('check that x is not in issue_field')
         # if y not in self.ISSUE_FIELD :
         #     print('check that y is not in issue_field')
 
-        pivot = df.pivot_table(index=x, values=self.KEY , aggfunc = 'count', fill_value = 0)
-        print(pivot)
+        # jira_pivot = df.pivot_table(index=x, values=self.KEY , aggfunc = 'count', fill_value = 0)
+        jira_pivot = df.pivot_table(index=x, columns=y, values='Key' , aggfunc = 'count', fill_value = 0)
+        # print(jira_pivot)
 
-
-    # df_pivot = df.pivot_table(index=['assignee', 'status'], values = 'Key', aggfunc = 'count', fill_value = 0)
-
+        if y == None :
+            jira_pivot.plot.bar()
+            plt.show()
+        else :
+            _draw_sub_plot(jira_pivot)
 
 
 def main():
@@ -166,23 +182,17 @@ def main():
     guide_robot_analysis.config_plot_font()
 
     # dataFrame으로 저장된 issues들을 원하는 2 Dimentional Graph 그리는 것,
-    guide_robot_analysis.draw_graph_assignee_count(df)
+    # guide_robot_analysis.draw_graph_assignee_count(df)
 
-    guide_robot_analysis.draw_2D_x_y(df, x=guide_robot_analysis.ASSIGNEE)
-
-
-
-
+    # guide_robot_analysis.draw_2D_x_y(df, x=guide_robot_analysis.ASSIGNEE, y=guide_robot_analysis.GRADE)
+    # guide_robot_analysis.draw_2D_x_y(df, x=guide_robot_analysis.ASSIGNEE)
+    guide_robot_analysis.draw_2D_x_y(df, x=guide_robot_analysis.ASSIGNEE, y=guide_robot_analysis.RESOLUTION)
 
 
 
 
 if __name__ == '__main__' :
     main()
-
-
-
-
 
 
 
