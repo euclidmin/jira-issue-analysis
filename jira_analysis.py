@@ -2,6 +2,7 @@ import math
 import os
 import platform
 from datetime import datetime
+
 import matplotlib.pyplot as plt
 import pandas as pd
 from jira.client import JIRA
