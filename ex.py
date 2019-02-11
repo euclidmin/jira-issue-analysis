@@ -23,5 +23,7 @@ guide_robot.config_plot_font()
 
 # guide_robot.draw_2D_x_y(df, x=guide_robot.ASSIGNEE, y=guide_robot.GRADE)
 # guide_robot.draw_2D_x_y(df, x=guide_robot.ASSIGNEE)
-guide_robot.draw_2D_x_y(df, x=guide_robot.ASSIGNEE, y=guide_robot.RESOLUTION)
+
+
+guide_robot.draw_2D_x_y(df, x=ja.ASSIGNEE, y=ja.STATUS)
 
